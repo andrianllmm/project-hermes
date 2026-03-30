@@ -10,7 +10,11 @@ Copy the example environment file and update it with your credentials:
 cp .env.example .env.local
 ```
 
-## 3. Set up Telegram bot
+## 3. Set up AI API
+
+Create a new API key in <https://aistudio.google.com> and update `.env.local` with the API key.
+
+## 4. Set up Telegram bot
 
 Create a new bot named `project_hermes_<your-name>_bot`.
 
@@ -33,19 +37,19 @@ curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
   }'
 ```
 
-## 4. Install dependencies
+## 5. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-## 5. Start database
+## 6. Start database
 
 ```bash
 supabase start
 ```
 
-## 6. Run the development server
+## 7. Run the development server
 
 ```bash
 pnpm dev
