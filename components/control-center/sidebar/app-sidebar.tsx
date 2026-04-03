@@ -11,9 +11,9 @@ import {
 } from '@tabler/icons-react';
 import * as React from 'react';
 
-import { NavMain } from '@/components/nav-main';
-import { NavSecondary } from '@/components/nav-secondary';
-import { NavUser } from '@/components/nav-user';
+import { NavMain } from '@/components/control-center/sidebar/nav-main';
+import { NavSecondary } from '@/components/control-center/sidebar/nav-secondary';
+import { NavUser } from '@/components/control-center/sidebar/nav-user';
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import Logo from './brand/logo';
+import Logo from '../../brand/logo';
 
 const data = {
   navMain: [
