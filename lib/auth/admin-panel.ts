@@ -36,6 +36,11 @@ type AdminRoleAssignmentRow = {
   scope_id: string | null;
 };
 
+type AdminRoleSummaryRow = Pick<
+  AdminRoleAssignmentRow,
+  'role' | 'scope_type' | 'scope_id'
+>;
+
 function isAppRole(value: string): value is AppRole {
   return value === 'super_admin' || value === 'admin' || value === 'responder';
 }
@@ -76,7 +81,54 @@ function sortManagedUsers(left: ManagedStaffUser, right: ManagedStaffUser) {
   return leftLabel.localeCompare(rightLabel);
 }
 
-async function loadStaffUsers(): Promise<ManagedStaffUser[]> {
+function collectRoles(
+  assignments: AdminRoleSummaryRow[] | null | undefined
+): AppRole[] {
+  const roles: AppRole[] = [];
+
+  for (const assignment of assignments ?? []) {
+    if (
+      assignment.scope_type === 'global' &&
+      isAppRole(assignment.role) &&
+      !roles.includes(assignment.role)
+    ) {
+      roles.push(assignment.role);
+    }
+  }
+
+  return roles.sort((left, right) => ROLE_ORDER[left] - ROLE_ORDER[right]);
+}
+
+function buildManagedStaffUser(
+  user: AdminListUser,
+  fullName: string | null,
+  roles: AppRole[]
+): ManagedStaffUser | null {
+  const email = user.email?.trim().toLowerCase();
+  const primaryRole = derivePrimaryRole(roles);
+
+  if (!email || roles.length === 0 || !primaryRole) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    email,
+    fullName,
+    roles,
+    primaryRole,
+    status: deriveManagedUserStatus(user.banned_until),
+    createdAt: user.created_at ?? new Date(0).toISOString(),
+    lastSignInAt: user.last_sign_in_at ?? null,
+    invitedAt: user.invited_at ?? null,
+    emailConfirmedAt: user.email_confirmed_at ?? null,
+    bannedUntil: user.banned_until ?? null,
+    userMetadata: user.user_metadata ?? {},
+    appMetadata: user.app_metadata ?? {},
+  };
+}
+
+async function loadUsersContext() {
   const adminClient = createAdminClient();
 
   const [
@@ -115,47 +167,36 @@ async function loadStaffUsers(): Promise<ManagedStaffUser[]> {
 
   for (const assignment of (roleAssignments ??
     []) as AdminRoleAssignmentRow[]) {
-    if (!assignment.user_id || !isAppRole(assignment.role)) {
-      continue;
-    }
+    const roles = rolesByUserId.get(assignment.user_id) ?? [];
 
-    const existingRoles = rolesByUserId.get(assignment.user_id) ?? [];
-    if (!existingRoles.includes(assignment.role)) {
-      existingRoles.push(assignment.role);
-      rolesByUserId.set(assignment.user_id, existingRoles);
+    if (
+      assignment.scope_type === 'global' &&
+      isAppRole(assignment.role) &&
+      !roles.includes(assignment.role)
+    ) {
+      roles.push(assignment.role);
+      rolesByUserId.set(assignment.user_id, roles);
     }
   }
 
-  const authUsers = (authUsersPage?.users ?? []) as AdminListUser[];
+  return {
+    authUsers: (authUsersPage?.users ?? []) as AdminListUser[],
+    profilesById,
+    rolesByUserId,
+  };
+}
+
+async function loadStaffUsers(): Promise<ManagedStaffUser[]> {
+  const { authUsers, profilesById, rolesByUserId } = await loadUsersContext();
 
   return authUsers
-    .map((user) => {
-      const email = user.email?.trim().toLowerCase();
-      const roles = rolesByUserId.get(user.id) ?? [];
-      const primaryRole = derivePrimaryRole(roles);
-
-      if (!email || roles.length === 0 || !primaryRole) {
-        return null;
-      }
-
-      return {
-        id: user.id,
-        email,
-        fullName: profilesById.get(user.id) ?? null,
-        roles: [...roles].sort(
-          (left, right) => ROLE_ORDER[left] - ROLE_ORDER[right]
-        ),
-        primaryRole,
-        status: deriveManagedUserStatus(user.banned_until),
-        createdAt: user.created_at ?? new Date(0).toISOString(),
-        lastSignInAt: user.last_sign_in_at ?? null,
-        invitedAt: user.invited_at ?? null,
-        emailConfirmedAt: user.email_confirmed_at ?? null,
-        bannedUntil: user.banned_until ?? null,
-        userMetadata: user.user_metadata ?? {},
-        appMetadata: user.app_metadata ?? {},
-      } satisfies ManagedStaffUser;
-    })
+    .map((user) =>
+      buildManagedStaffUser(
+        user,
+        profilesById.get(user.id) ?? null,
+        rolesByUserId.get(user.id) ?? []
+      )
+    )
     .filter((user): user is ManagedStaffUser => Boolean(user))
     .sort(sortManagedUsers);
 }
@@ -191,7 +232,59 @@ async function loadAdminPanelData() {
 export const getAdminPanelData = cache(loadAdminPanelData);
 
 export async function getManagedStaffUserById(userId: string) {
-  const users = await loadStaffUsers();
+  const adminClient = createAdminClient();
 
-  return users.find((user) => user.id === userId) ?? null;
+  const [
+    { data: authUserResponse, error: authUserError },
+    { data: profile, error: profileError },
+    { data: roleAssignments, error: roleAssignmentsError },
+  ] = await Promise.all([
+    adminClient.auth.admin.getUserById(userId),
+    adminClient
+      .from('profiles')
+      .select('full_name')
+      .eq('id', userId)
+      .maybeSingle(),
+    adminClient
+      .from('role_assignments')
+      .select('role, scope_type, scope_id')
+      .eq('user_id', userId)
+      .eq('scope_type', 'global'),
+  ]);
+
+  if (authUserError) {
+    throw authUserError;
+  }
+
+  if (profileError) {
+    throw profileError;
+  }
+
+  if (roleAssignmentsError) {
+    throw roleAssignmentsError;
+  }
+
+  const user = authUserResponse?.user;
+
+  if (!user) {
+    return null;
+  }
+
+  const managedUser = buildManagedStaffUser(
+    {
+      id: user.id,
+      email: user.email,
+      created_at: user.created_at,
+      last_sign_in_at: user.last_sign_in_at,
+      invited_at: user.invited_at,
+      email_confirmed_at: user.email_confirmed_at,
+      banned_until: user.banned_until,
+      user_metadata: user.user_metadata,
+      app_metadata: user.app_metadata,
+    },
+    profile?.full_name ?? null,
+    collectRoles(roleAssignments as AdminRoleSummaryRow[])
+  );
+
+  return managedUser;
 }
