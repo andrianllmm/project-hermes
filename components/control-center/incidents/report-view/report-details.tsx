@@ -210,11 +210,21 @@ export default function ReportDetails() {
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         >
-          <option value="">Select status</option>
-          <option value="open">Open</option>
-          <option value="in_progress">In Progress</option>
-          <option value="resolved">Resolved</option>
-          <option value="closed">Closed</option>
+          <option value="" className={listStyle}>
+            Select status
+          </option>
+          <option value="open" className={listStyle}>
+            Open
+          </option>
+          <option value="in_progress" className={listStyle}>
+            In Progress
+          </option>
+          <option value="resolved" className={listStyle}>
+            Resolved
+          </option>
+          <option value="closed" className={listStyle}>
+            Closed
+          </option>
         </select>
       </div>
 
@@ -275,7 +285,7 @@ export default function ReportDetails() {
           type="submit"
           className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
         >
-          Resolve
+          Close Incident
         </button>
         <button
           type="reset"

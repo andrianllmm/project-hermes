@@ -1,19 +1,18 @@
 'use client';
 
-import * as React from 'react';
 import { useState } from 'react';
 import ChatBox from './report-view/chatbox';
-import { IncidentList } from './report-view/incident-list';
 import { ReportContainer } from './report-view/report-container';
+import IncidentCard from './report-view/report-list/incidents-card';
 
 interface TabsProps {
   defaultTab?: string;
 }
 
 export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
-  React.useEffect(() => {
-    document.body.style.overflow = 'hidden';
-  }, []);
+  //   React.useEffect(() => {
+  //     document.body.style.overflow = 'hidden';
+  //   }, []);
 
   const [activeTab, setActiveTab] = useState(defaultTab);
 
@@ -22,8 +21,8 @@ export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
       id: 'reports',
       label: 'Reports',
       content: (
-        <div className="p-4 flex flex-ro gap-4">
-          <IncidentList />
+        <div className="p-4 flex flex-ro gap-4 overflow-auto">
+          <IncidentCard />
           <ChatBox />
           <ReportContainer />
         </div>
