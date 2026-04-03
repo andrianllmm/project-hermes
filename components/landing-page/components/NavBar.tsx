@@ -99,7 +99,7 @@ export function Navbar({ authButton }: { authButton?: ReactNode }) {
             className="cursor-pointer mr-[-15px] ml-[-12px]"
           >
             <a
-              href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+              href="https://github.com/popcorn-prophets/project-hermes"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub Repository"
@@ -153,7 +153,7 @@ export function Navbar({ authButton }: { authButton?: ReactNode }) {
                       className="cursor-pointer h-8 w-8"
                     >
                       <a
-                        href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
+                        href="https://github.com/popcorn-prophets/project-hermes"
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="GitHub Repository"
