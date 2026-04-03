@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import { Button } from './ui/button';
-import { LogoutButton } from './logout-button';
 import {
   getCurrentUser,
   isBootstrapRegistrationOpen,
   userHasRole,
 } from '@/lib/auth/dal';
+import Link from 'next/link';
+import { LogoutButton } from './logout-button';
+import { Button } from './ui/button';
 
 export async function AuthButton() {
   const [user, bootstrapOpen] = await Promise.all([

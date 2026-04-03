@@ -1,21 +1,13 @@
 'use client';
 
 import Logo from '@/components/brand/logo';
-import { MegaMenu } from '@/components/maga-menu';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import {
   Sheet,
@@ -24,46 +16,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  ChevronDown,
-  Github,
-  LayoutDashboard,
-  Menu,
-  Moon,
-  Sun,
-  X,
-} from 'lucide-react';
+import { Github, Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 const navigationItems = [
   { name: 'Home', href: '#hero' },
   { name: 'Features', href: '#features' },
-  { name: 'Solutions', href: '#features', hasMegaMenu: true },
   { name: 'Team', href: '#team' },
   { name: 'Pricing', href: '#pricing' },
   { name: 'FAQ', href: '#faq' },
   { name: 'Contact', href: '#contact' },
-];
-
-// Solutions menu items for mobile
-const solutionsItems = [
-  { title: 'Browse Products' },
-  { name: 'Free Blocks', href: '#free-blocks' },
-  { name: 'Premium Templates', href: '#premium-templates' },
-  { name: 'Admin Dashboards', href: '#admin-dashboards' },
-  { name: 'Landing Pages', href: '#landing-pages' },
-  { title: 'Categories' },
-  { name: 'E-commerce', href: '#ecommerce' },
-  { name: 'SaaS Dashboards', href: '#saas-dashboards' },
-  { name: 'Analytics', href: '#analytics' },
-  { name: 'Authentication', href: '#authentication' },
-  { title: 'Resources' },
-  { name: 'Documentation', href: '#docs' },
-  { name: 'Component Showcase', href: '#showcase' },
-  { name: 'GitHub Repository', href: '#github' },
-  { name: 'Design System', href: '#design-system' },
 ];
 
 // Smooth scroll function
@@ -79,9 +43,8 @@ const smoothScrollTo = (targetId: string) => {
   }
 };
 
-export function Navbar() {
+export function Navbar({ authButton }: { authButton?: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
   const { setTheme, theme } = useTheme();
 
   return (
@@ -105,38 +68,32 @@ export function Navbar() {
           <NavigationMenuList>
             {navigationItems.map((item) => (
               <NavigationMenuItem key={item.name}>
-                {item.hasMegaMenu ? (
-                  <>
-                    <NavigationMenuTrigger className="bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary cursor-pointer">
-                      {item.name}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <MegaMenu />
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  <NavigationMenuLink
-                    className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
-                    onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
-                      if (item.href.startsWith('#')) {
-                        smoothScrollTo(item.href);
-                      } else {
-                        window.location.href = item.href;
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </NavigationMenuLink>
-                )}
+                <NavigationMenuLink
+                  className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium transition-colors hover:text-primary focus:text-primary focus:outline-none cursor-pointer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.preventDefault();
+                    if (item.href.startsWith('#')) {
+                      smoothScrollTo(item.href);
+                    } else {
+                      window.location.href = item.href;
+                    }
+                  }}
+                >
+                  {item.name}
+                </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
 
         {/* Desktop CTA */}
-        <div className="hidden xl:flex items-center space-x-2">
-          <ThemeSwitcher />
+        <div className="flex gap-4 items-center">
+          {/* Control Center */}
+          <Link href="/control-center">Control Center</Link>
+
+          {authButton}
+
+          {/* GitHub */}
           <Button
             variant="ghost"
             size="icon"
@@ -152,18 +109,9 @@ export function Navbar() {
               <Github className="h-5 w-5" />
             </a>
           </Button>
-          <Button variant="outline" asChild className="cursor-pointer">
-            <Link href="/dashboard" target="_blank" rel="noopener noreferrer">
-              <LayoutDashboard className="h-4 w-4 mr-2" />
-              Dashboard
-            </Link>
-          </Button>
-          <Button variant="ghost" asChild className="cursor-pointer">
-            <Link href="/auth/sign-in">Sign In</Link>
-          </Button>
-          <Button asChild className="cursor-pointer">
-            <Link href="/auth/sign-up">Get Started</Link>
-          </Button>
+
+          {/* Theme Switcher */}
+          <ThemeSwitcher />
         </div>
 
         {/* Mobile Menu */}
@@ -231,85 +179,36 @@ export function Navbar() {
               <div className="flex-1 overflow-y-auto">
                 <nav className="p-6 space-y-1">
                   {navigationItems.map((item) => (
-                    <div key={item.name}>
-                      {item.hasMegaMenu ? (
-                        <Collapsible
-                          open={solutionsOpen}
-                          onOpenChange={setSolutionsOpen}
-                        >
-                          <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                            {item.name}
-                            <ChevronDown
-                              className={`h-4 w-4 transition-transform ${solutionsOpen ? 'rotate-180' : ''}`}
-                            />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="pl-4 space-y-1">
-                            {solutionsItems.map((solution, index) =>
-                              solution.title ? (
-                                <div
-                                  key={`title-${index}`}
-                                  className="px-4 mt-5 py-2 text-xs font-semibold text-muted-foreground/50 uppercase tracking-wider"
-                                >
-                                  {solution.title}
-                                </div>
-                              ) : (
-                                <a
-                                  key={solution.name}
-                                  href={solution.href}
-                                  className="flex items-center px-4 py-2 text-sm rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                  onClick={(e) => {
-                                    setIsOpen(false);
-                                    if (solution.href?.startsWith('#')) {
-                                      e.preventDefault();
-                                      setTimeout(
-                                        () => smoothScrollTo(solution.href),
-                                        100
-                                      );
-                                    }
-                                  }}
-                                >
-                                  {solution.name}
-                                </a>
-                              )
-                            )}
-                          </CollapsibleContent>
-                        </Collapsible>
-                      ) : (
-                        <a
-                          href={item.href}
-                          className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                          onClick={(e) => {
-                            setIsOpen(false);
-                            if (item.href.startsWith('#')) {
-                              e.preventDefault();
-                              setTimeout(() => smoothScrollTo(item.href), 100);
-                            }
-                          }}
-                        >
-                          {item.name}
-                        </a>
-                      )}
-                    </div>
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="flex items-center px-4 py-3 text-base font-medium rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                      onClick={(e) => {
+                        setIsOpen(false);
+                        if (item.href.startsWith('#')) {
+                          e.preventDefault();
+                          setTimeout(() => smoothScrollTo(item.href), 100);
+                        }
+                      }}
+                    >
+                      {item.name}
+                    </a>
                   ))}
                 </nav>
               </div>
 
               {/* Footer Actions */}
               <div className="border-t p-6 space-y-4">
-                {/* Primary Actions */}
                 <div className="space-y-3">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    asChild
-                    className="w-full cursor-pointer"
+                  {/* Control Center */}
+                  <Link
+                    href="/control-center"
+                    className="px-4 py-3 text-base font-medium"
                   >
-                    <Link href="/dashboard">
-                      <LayoutDashboard className="size-4" />
-                      Dashboard
-                    </Link>
-                  </Button>
+                    Control Center
+                  </Link>
 
+                  {/* Sign In + Create Admin */}
                   <div className="grid grid-cols-2 gap-3">
                     <Button
                       variant="outline"
@@ -320,7 +219,7 @@ export function Navbar() {
                       <Link href="/auth/sign-in">Sign In</Link>
                     </Button>
                     <Button asChild size="lg" className="cursor-pointer">
-                      <Link href="/auth/sign-up">Get Started</Link>
+                      <Link href="/auth/sign-up">Create Admin</Link>
                     </Button>
                   </div>
                 </div>
