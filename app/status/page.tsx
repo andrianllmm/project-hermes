@@ -6,7 +6,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { StatusDetails } from './status-details';
+import { StatusDetails } from '@/components/status/status-details';
 
 export const metadata: Metadata = {
   title: 'Status — Project HERMES',

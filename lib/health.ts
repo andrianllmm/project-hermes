@@ -84,7 +84,6 @@ export async function getReadinessResult(): Promise<ReadinessResult> {
         method: 'GET',
         headers: {
           apikey: anonKey,
-          Authorization: `Bearer ${anonKey}`, //Token
         },
         signal: controller.signal,
         cache: 'no-store',
