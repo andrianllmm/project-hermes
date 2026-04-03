@@ -14,13 +14,9 @@ function getReportData() {
 }
 
 export function IncidentList() {
-  React.useEffect(() => {
-    document.body.style.overflow = 'hidden';
-  }, []);
-
   return (
     // NOTE: refactor max-h to use relative measurements. might cause bugs in current state
-    <ScrollArea className={`max-h-[calc(100vh-100px)] w-75 rounded-md border`}>
+    <ScrollArea className={`max-h-[calc(100vh-175px)] w-50 rounded-md border`}>
       <div className="p-4">
         <h4 className="mb-4 text-sm leading-none font-medium">Reports</h4>
         {getReportData().map((tag) => (

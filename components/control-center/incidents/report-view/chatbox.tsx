@@ -86,9 +86,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({
     });
   };
 
+  // TODO: refactor sizes to use relative measurements
   return (
     <div
-      className={`flex flex-col max-h-[calc(100vh-100px)] w-125 ${
+      className={`flex flex-col max-h-[calc(100vh-175px)] w-200 ${
         darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'
       }`}
     >
