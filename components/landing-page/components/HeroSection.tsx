@@ -1,8 +1,67 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+const incidentTypes = [
+  'Fire',
+  'Flood',
+  'Earthquake',
+  'Medical Emergency',
+  'Typhoon',
+  'Landslide',
+  'Vehicular Accident',
+];
+
+function useTypewriter(
+  words: string[],
+  typingSpeed = 100,
+  deletingSpeed = 50,
+  pauseDuration = 2000
+) {
+  const [displayText, setDisplayText] = useState('');
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = words[wordIndex];
+
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          if (displayText.length < currentWord.length) {
+            setDisplayText(currentWord.slice(0, displayText.length + 1));
+          } else {
+            setTimeout(() => setIsDeleting(true), pauseDuration);
+          }
+        } else {
+          if (displayText.length > 0) {
+            setDisplayText(displayText.slice(0, -1));
+          } else {
+            setIsDeleting(false);
+            setWordIndex((prev) => (prev + 1) % words.length);
+          }
+        }
+      },
+      isDeleting ? deletingSpeed : typingSpeed
+    );
+
+    return () => clearTimeout(timeout);
+  }, [
+    displayText,
+    isDeleting,
+    wordIndex,
+    words,
+    typingSpeed,
+    deletingSpeed,
+    pauseDuration,
+  ]);
+
+  return displayText;
+}
 
 export function NewHeroSection() {
+  const typedText = useTypewriter(incidentTypes, 80, 40, 1500);
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 w-full min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-20 mt-[-81px]">
       <style>{`
@@ -38,7 +97,7 @@ export function NewHeroSection() {
           Transform Your Business
           <br />
           <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            With Innovation
+            {typedText}
           </span>
         </h1>
 
