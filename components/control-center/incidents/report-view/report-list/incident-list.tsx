@@ -17,9 +17,14 @@ async function getReportData(count: number = 50): Promise<Incident[] | null> {
 }
 
 export function IncidentList() {
+  // NOTE: Refactor to increase shorten code
   const [incidents, setIncidents] = React.useState<Incident[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [selectedIncident, setSelectedIncident] = React.useState<string | null>(
+    null
+  );
 
+  // display loading
   React.useEffect(() => {
     const loadIncidents = async () => {
       setLoading(true);
@@ -33,6 +38,10 @@ export function IncidentList() {
     loadIncidents();
   }, []);
 
+  const handleIncidentClick = (id: string) => {
+    setSelectedIncident(id);
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -40,7 +49,11 @@ export function IncidentList() {
       <div className="p-4">
         {incidents.map((incident) => (
           <React.Fragment key={incident.id}>
-            <IncidentEntry id={incident.incident_time} />
+            <IncidentEntry
+              id={incident.incident_time}
+              isSelected={selectedIncident === incident.id}
+              onClick={() => handleIncidentClick(incident.id)}
+            />
             <Separator className="my-2" />
           </React.Fragment>
         ))}
