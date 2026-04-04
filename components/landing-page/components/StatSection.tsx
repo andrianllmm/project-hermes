@@ -1,7 +1,9 @@
 'use client';
 
+import PhilippinesBlack from '@/components/assets/philippines-black.png';
+import PhilippinesWhite from '@/components/assets/philippines-white.png';
+import { NumberTicker } from '@/components/ui/number-ticker';
 import Image from 'next/image';
-import { NumberTicker } from './number-ticker';
 
 const disasterFacts = [
   {
@@ -34,7 +36,7 @@ const disasterFacts = [
   },
 ];
 
-export function DisasterFactsSection() {
+export function StatSection() {
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
       {/* Background */}
@@ -43,17 +45,6 @@ export function DisasterFactsSection() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground mb-4">
-            Why HERMES Matters
-          </p>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl text-balance">
-            The Philippines Faces{' '}
-            <span className="text-muted-foreground">Constant Threats</span>
-          </h2>
-        </div>
-
         {/* Content Grid */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Stats Cards - Left Side */}
@@ -89,7 +80,7 @@ export function DisasterFactsSection() {
 
               {/* Light mode map (black) */}
               <Image
-                src="/images/philippines-map-black.png"
+                src={PhilippinesBlack}
                 alt="Map of the Philippines"
                 width={550}
                 height={825}
@@ -98,7 +89,7 @@ export function DisasterFactsSection() {
 
               {/* Dark mode map (white) */}
               <Image
-                src="/images/philippines-map-white.png"
+                src={PhilippinesWhite}
                 alt="Map of the Philippines"
                 width={550}
                 height={825}
