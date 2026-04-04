@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import * as React from 'react';
+import KanbanContent from './kanban-view/content';
 import ChatBox from './report-view/chatbox';
 import { ReportContainer } from './report-view/report-container';
 import IncidentCard from './report-view/report-list/incidents-card';
@@ -10,11 +11,11 @@ interface TabsProps {
 }
 
 export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
-  //   React.useEffect(() => {
-  //     document.body.style.overflow = 'hidden';
-  //   }, []);
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+  }, []);
 
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [activeTab, setActiveTab] = React.useState(defaultTab);
 
   const tabs = [
     {
@@ -32,9 +33,10 @@ export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
       id: 'resources',
       label: 'Kanban Board',
       content: (
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2">Kanban Board</h3>
-          <p className="text-gray-600">This section lists the Kanban Board</p>
+        <div className="p-4 flex flex-row flex-1 w-full gap-4">
+          <KanbanContent title="Open" />
+          <KanbanContent title="In Progress" />
+          <KanbanContent title="Resolved" />
         </div>
       ),
     },
