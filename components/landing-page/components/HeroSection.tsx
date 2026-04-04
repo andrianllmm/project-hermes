@@ -5,6 +5,8 @@ import { useTypewriter } from '@/hooks/use-typewriter';
 import { ArrowRight, Play } from 'lucide-react';
 import { useState } from 'react';
 
+import demoThumbnail from '@/components/brand/image.png';
+
 const INCIDENT_TYPES = [
   'Fire',
   'Flood',
@@ -130,7 +132,7 @@ export function NewHeroSection() {
             <HeroVideoDialog
               animationStyle="from-center"
               videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
-              thumbnailSrc="https://startup-template-sage.vercel.app/hero-dark.png"
+              thumbnailSrc={demoThumbnail.src}
               thumbnailAlt="Hero Video"
               className={hasStarted ? 'hidden' : ''}
             />
