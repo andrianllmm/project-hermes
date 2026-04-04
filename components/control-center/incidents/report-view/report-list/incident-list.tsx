@@ -6,6 +6,10 @@ import { fetchIncidents, type Incident } from '@/lib/supabase/reports';
 import * as React from 'react';
 import IncidentEntry from './incident-entry';
 
+interface IncidentListProps {
+  onIncidentSelect?: (incident: Incident) => void;
+}
+
 async function getReportData(count: number = 50): Promise<Incident[] | null> {
   const incidents = await fetchIncidents(count);
 
@@ -16,7 +20,7 @@ async function getReportData(count: number = 50): Promise<Incident[] | null> {
   }
 }
 
-export function IncidentList() {
+export function IncidentList({ onIncidentSelect }: IncidentListProps) {
   // NOTE: Refactor to increase shorten code
   const [incidents, setIncidents] = React.useState<Incident[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -40,6 +44,10 @@ export function IncidentList() {
 
   const handleIncidentClick = (id: string) => {
     setSelectedIncident(id);
+    const selectedIncidentData = incidents.find((inc) => inc.id === id);
+    if (selectedIncidentData) {
+      onIncidentSelect!(selectedIncidentData);
+    }
   };
 
   if (loading) return <div>Loading...</div>;

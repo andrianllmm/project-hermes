@@ -5,11 +5,11 @@ import React, { useState } from 'react';
 import Location from './location';
 import ReportDetails from './report-details';
 
-interface TabsProps {
+interface ReportContainerProps {
   defaultTab?: string;
 }
 
-export const ReportContainer: React.FC<TabsProps> = ({
+export const ReportContainer: React.FC<ReportContainerProps> = ({
   defaultTab = 'details',
 }) => {
   const [activeTab, setActiveTab] = useState(defaultTab);

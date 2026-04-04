@@ -1,5 +1,6 @@
 'use client';
 
+import { Incident } from '@/lib/supabase/reports';
 import * as React from 'react';
 import KanbanContent from './kanban-view/content';
 import ChatBox from './report-view/chatbox';
@@ -17,13 +18,17 @@ export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
 
   const [activeTab, setActiveTab] = React.useState(defaultTab);
 
+  const handleOnIncidentClick = (incident: Incident) => {
+    console.log(incident);
+  };
+
   const tabs = [
     {
       id: 'reports',
       label: 'Reports',
       content: (
         <div className="p-4 flex flex-ro gap-4 overflow-auto">
-          <IncidentCard />
+          <IncidentCard onIncidentSelect={handleOnIncidentClick} />
           <ChatBox />
           <ReportContainer />
         </div>
