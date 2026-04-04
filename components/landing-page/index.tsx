@@ -1,5 +1,6 @@
 import { AuthButton } from '@/components/auth-button';
 import { Suspense } from 'react';
+import { ChallengesSection } from './components/ChallengeSection';
 import { NewHeroSection as HeroSection } from './components/HeroSection';
 import { Navbar } from './components/NavBar';
 import { StatSection } from './components/StatSection';
@@ -17,6 +18,7 @@ export default function LandingPage() {
         />
         <HeroSection />
         <StatSection />
+        <ChallengesSection />
       </div>
     </main>
   );
