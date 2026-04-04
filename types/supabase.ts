@@ -137,7 +137,128 @@ export type Database = {
             referencedRelation: 'residents';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'advisory_recipients_resident_id_fkey';
+            columns: ['resident_id'];
+            isOneToOne: false;
+            referencedRelation: 'residents_with_coords';
+            referencedColumns: ['id'];
+          },
         ];
+      };
+      chat_state_cache: {
+        Row: {
+          cache_key: string;
+          expires_at: string | null;
+          key_prefix: string;
+          updated_at: string;
+          value: string;
+        };
+        Insert: {
+          cache_key: string;
+          expires_at?: string | null;
+          key_prefix: string;
+          updated_at?: string;
+          value: string;
+        };
+        Update: {
+          cache_key?: string;
+          expires_at?: string | null;
+          key_prefix?: string;
+          updated_at?: string;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      chat_state_lists: {
+        Row: {
+          expires_at: string | null;
+          key_prefix: string;
+          list_key: string;
+          seq: number;
+          value: string;
+        };
+        Insert: {
+          expires_at?: string | null;
+          key_prefix: string;
+          list_key: string;
+          seq?: number;
+          value: string;
+        };
+        Update: {
+          expires_at?: string | null;
+          key_prefix?: string;
+          list_key?: string;
+          seq?: number;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      chat_state_locks: {
+        Row: {
+          expires_at: string;
+          key_prefix: string;
+          thread_id: string;
+          token: string;
+          updated_at: string;
+        };
+        Insert: {
+          expires_at: string;
+          key_prefix: string;
+          thread_id: string;
+          token: string;
+          updated_at?: string;
+        };
+        Update: {
+          expires_at?: string;
+          key_prefix?: string;
+          thread_id?: string;
+          token?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      chat_state_queues: {
+        Row: {
+          expires_at: string;
+          key_prefix: string;
+          seq: number;
+          thread_id: string;
+          value: string;
+        };
+        Insert: {
+          expires_at: string;
+          key_prefix: string;
+          seq?: number;
+          thread_id: string;
+          value: string;
+        };
+        Update: {
+          expires_at?: string;
+          key_prefix?: string;
+          seq?: number;
+          thread_id?: string;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      chat_state_subscriptions: {
+        Row: {
+          created_at: string;
+          key_prefix: string;
+          thread_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          key_prefix: string;
+          thread_id: string;
+        };
+        Update: {
+          created_at?: string;
+          key_prefix?: string;
+          thread_id?: string;
+        };
+        Relationships: [];
       };
       incident_types: {
         Row: {
@@ -213,6 +334,13 @@ export type Database = {
             columns: ['reported_by'];
             isOneToOne: false;
             referencedRelation: 'residents';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'incidents_reported_by_fkey';
+            columns: ['reported_by'];
+            isOneToOne: false;
+            referencedRelation: 'residents_with_coords';
             referencedColumns: ['id'];
           },
         ];
@@ -308,7 +436,42 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      residents_with_coords: {
+        Row: {
+          created_at: string | null;
+          id: string | null;
+          language: Database['public']['Enums']['resident_language'] | null;
+          latitude: number | null;
+          longitude: number | null;
+          name: string | null;
+          platform: Database['public']['Enums']['resident_platform'] | null;
+          platform_user_id: string | null;
+          thread_id: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string | null;
+          language?: Database['public']['Enums']['resident_language'] | null;
+          latitude?: never;
+          longitude?: never;
+          name?: string | null;
+          platform?: Database['public']['Enums']['resident_platform'] | null;
+          platform_user_id?: string | null;
+          thread_id?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string | null;
+          language?: Database['public']['Enums']['resident_language'] | null;
+          latitude?: never;
+          longitude?: never;
+          name?: string | null;
+          platform?: Database['public']['Enums']['resident_platform'] | null;
+          platform_user_id?: string | null;
+          thread_id?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       bootstrap_registration_open: { Args: never; Returns: boolean };
