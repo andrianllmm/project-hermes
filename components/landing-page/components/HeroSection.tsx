@@ -120,11 +120,15 @@ export function NewHeroSection() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Button size="lg" className="group gap-2">
+          <Button size="lg" className="h-10 w-45 text-base px-8 group gap-3">
             Get Started
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Button>
-          <Button size="lg" variant="outline" className="group gap-2">
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-10 w-45 text-base px-8 group gap-3"
+          >
             <Play className="h-4 w-4" />
             Watch Demo
           </Button>
@@ -162,6 +166,9 @@ export function NewHeroSection() {
               onEnded={() => setIsPlaying(false)}
             />
 
+            {/* Bottom fade overlay */}
+            <div className="absolute -bottom-35 left-0 w-full h-32 md:h-40 lg:h-48 bg-gradient-to-b from-background/0 via-background/70 to-background rounded-b-xl pointer-events-none" />
+
             {/* Play / Pause button overlay */}
             <div
               className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
@@ -171,10 +178,10 @@ export function NewHeroSection() {
               }`}
             >
               <Button
-                size="lg"
+                size="icon"
                 onClick={togglePlay}
                 aria-label={isPlaying ? 'Pause demo video' : 'Play demo video'}
-                className="rounded-full h-16 w-16 p-0 hover:scale-105 transition-transform"
+                className="rounded-full h-8 w-8 p-0 hover:scale-105 transition-transform"
               >
                 {isPlaying ? (
                   <Pause className="h-6 w-6 fill-current" />
