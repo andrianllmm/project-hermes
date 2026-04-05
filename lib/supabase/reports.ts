@@ -71,7 +71,11 @@ export async function fetchIncidents(
 }
 
 // Fetch incident by ID
-export async function fetchIncidentById(id: string): Promise<Incident | null> {
+export async function fetchIncidentById(
+  id: string | null
+): Promise<Incident | null> {
+  if (!id) return null;
+
   try {
     const { data, error } = await supabase
       .from('incidents')
@@ -83,9 +87,6 @@ export async function fetchIncidentById(id: string): Promise<Incident | null> {
       console.error('Error fetching incident:', error);
       return null;
     }
-
-    // TODO : Remove after debugging
-    console.log(data);
 
     return data as Incident;
   } catch (error) {
