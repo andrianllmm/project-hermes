@@ -9,14 +9,6 @@ export const messageCatalog: MessageCatalog = {
     eng: "What's your preferred language?",
     fil: 'Anong wika ang gusto mong gamitin?',
   },
-  'onboarding.language.english': {
-    eng: 'English',
-    fil: 'Ingles',
-  },
-  'onboarding.language.tagalog': {
-    eng: 'Filipino (Tagalog)',
-    fil: 'Filipino (Tagalog)',
-  },
   'onboarding.prompt.name': {
     eng: "What's your name?",
     fil: 'Ano ang pangalan mo?',

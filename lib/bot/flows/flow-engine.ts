@@ -1,4 +1,6 @@
 import type { BotThread } from '@/lib/bot/types';
+import { DEFAULT_LOCALE } from '../i18n';
+import type { ResidentLocale } from '../i18n/types';
 import { stepHandlerRegistry } from '../steps/step-handler-registry';
 import type { Step } from '../steps/step-types';
 import { COMPLETE_FLOW_STEP_ID } from './confirmation-step';
@@ -297,12 +299,12 @@ class FlowEngine {
 
   /**
    * Create initial flow state.
-   * Optionally accepts a locale; defaults to 'eng' if not provided.
+   * Optionally accepts a locale; defaults to configured locale if not provided.
    */
   createInitialState(
     flowId: string,
     flowVersion: number = 1,
-    locale: 'eng' | 'fil' = 'eng'
+    locale: ResidentLocale = DEFAULT_LOCALE
   ): FlowThreadState {
     const flow = this.getFlow(flowId);
 

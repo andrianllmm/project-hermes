@@ -2,7 +2,12 @@ import type { BotInstance } from '@/lib/bot/chat';
 import { flowEngine } from '@/lib/bot/flows/flow-engine';
 import { flowRegistry } from '@/lib/bot/flows/flow-registry';
 import type { Flow, FlowThreadState } from '@/lib/bot/flows/flow-types';
-import { resolveResidentLocale, translate } from '@/lib/bot/i18n';
+import {
+  DEFAULT_LOCALE,
+  resolveResidentLocale,
+  translate,
+} from '@/lib/bot/i18n';
+import type { ResidentLocale } from '@/lib/bot/i18n/types';
 import type { BotThread } from '@/lib/bot/types';
 import { createAdminClient } from '@/lib/supabase/admin';
 
@@ -33,7 +38,9 @@ export function registerMessageHandlers(bot: BotInstance) {
     return data;
   }
 
-  function buildAvailableCommandHint(locale: 'eng' | 'fil' = 'eng'): string {
+  function buildAvailableCommandHint(
+    locale: ResidentLocale = DEFAULT_LOCALE
+  ): string {
     const commands = flowRegistry.getStartCommands();
 
     if (commands.length === 0) {

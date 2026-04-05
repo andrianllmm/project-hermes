@@ -1,14 +1,15 @@
 import { createAdminClient } from '@/lib/supabase/admin';
+import { DEFAULT_LOCALE } from './config';
 import { normalizeLocale } from './translator';
 import type { ResidentLocale } from './types';
 
 /**
  * Resolve the resident's preferred locale from their saved language preference.
  * Queries the residents table by thread_id and returns their language setting.
- * Falls back to English if the resident is not found or has no language set.
+ * Falls back to the configured default locale if resident data is unavailable.
  *
  * @param threadId The bot thread ID (usually resident.thread_id)
- * @returns Normalized ResidentLocale (eng or fil)
+ * @returns Normalized ResidentLocale
  */
 export async function resolveResidentLocale(
   threadId: string
@@ -27,23 +28,20 @@ export async function resolveResidentLocale(
         threadId,
         error,
       });
-      // Default to English on query error
-      return 'eng';
+      return DEFAULT_LOCALE;
     }
 
     if (!data?.language) {
-      // Default to English if no language preference exists
-      return 'eng';
+      return DEFAULT_LOCALE;
     }
 
-    // Normalize the language value to eng or fil (falls back to eng for unknown values)
+    // Normalize language value and apply fallback when needed.
     return normalizeLocale(data.language);
   } catch (error) {
     console.error('Unexpected error resolving resident locale:', {
       threadId,
       error,
     });
-    // Default to English on any error
-    return 'eng';
+    return DEFAULT_LOCALE;
   }
 }

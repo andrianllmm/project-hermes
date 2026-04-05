@@ -1,8 +1,5 @@
-/**
- * Supported resident locales.
- * Maps to the resident_language enum in Supabase.
- */
-export type ResidentLocale = 'eng' | 'fil';
+export type { ResidentLocale } from './config';
+import type { ResidentLocale } from './config';
 
 /**
  * Message key namespace for all resident-facing bot copy.
@@ -11,8 +8,6 @@ export type ResidentLocale = 'eng' | 'fil';
 export type MessageKey =
   // Onboarding flow
   | 'onboarding.prompt.language'
-  | 'onboarding.language.english'
-  | 'onboarding.language.tagalog'
   | 'onboarding.prompt.name'
   | 'onboarding.prompt.location'
   | 'onboarding.prompt.confirm'
@@ -85,10 +80,4 @@ export type MessageKey =
 /**
  * Message catalog structure: messageKey -> locale -> translation
  */
-export type MessageCatalog = Record<
-  MessageKey,
-  {
-    eng: string;
-    fil: string;
-  }
->;
+export type MessageCatalog = Record<MessageKey, Record<ResidentLocale, string>>;

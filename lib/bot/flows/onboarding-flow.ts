@@ -1,4 +1,11 @@
-import { translate } from '@/lib/bot/i18n';
+import {
+  DEFAULT_LOCALE,
+  getLocaleLabel,
+  isSupportedLocale,
+  SUPPORTED_LOCALES,
+  translate,
+} from '@/lib/bot/i18n';
+import type { ResidentLocale } from '@/lib/bot/i18n/types';
 import type { BotThread } from '@/lib/bot/types';
 import { pointToString } from '@/lib/geo';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -32,17 +39,11 @@ export const onboardingFlow: Flow = {
       type: 'selection',
       renderPrompt: (_data, locale) =>
         translate('onboarding.prompt.language', locale),
-      options: [
-        {
-          label: translate('onboarding.language.english', 'eng'),
-          value: 'eng',
-        },
-        {
-          label: translate('onboarding.language.tagalog', 'eng'),
-          value: 'fil',
-        },
-      ],
-      validations: [isOneOf(['eng', 'fil'])],
+      options: SUPPORTED_LOCALES.map((localeCode) => ({
+        label: getLocaleLabel(localeCode),
+        value: localeCode,
+      })),
+      validations: [isOneOf([...SUPPORTED_LOCALES])],
       dataKey: 'language',
     },
     {
@@ -136,20 +137,19 @@ export const onboardingFlow: Flow = {
       await renderCard(thread, {
         title: translate(
           'onboarding.success.title',
-          language as ResidentLanguage
+          language as ResidentLocale
         ),
         content: translate(
           'onboarding.success.message',
-          language as ResidentLanguage
+          language as ResidentLocale
         ),
       });
     } catch (error) {
       console.error('Onboarding completion error:', error);
 
-      const locale =
-        data.language === 'fil' || data.language === 'eng'
-          ? data.language
-          : 'eng';
+      const locale = isSupportedLocale(data.language)
+        ? data.language
+        : DEFAULT_LOCALE;
 
       // Render error message using card renderer
       const { renderCard } = await import('../renderers/card-renderer');
@@ -166,10 +166,9 @@ export const onboardingFlow: Flow = {
    */
   onCancel: async (thread) => {
     const { renderCard } = await import('../renderers/card-renderer');
-    // Use English for cancel since we don't know the locale at this point
     await renderCard(thread, {
-      title: translate('onboarding.cancel.title', 'eng'),
-      content: translate('onboarding.cancel.message', 'eng'),
+      title: translate('onboarding.cancel.title', DEFAULT_LOCALE),
+      content: translate('onboarding.cancel.message', DEFAULT_LOCALE),
     });
   },
 };
