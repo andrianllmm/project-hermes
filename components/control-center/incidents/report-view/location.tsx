@@ -16,16 +16,6 @@ interface MapComponentProps {
   incidentID: string | null;
 }
 
-// TODO: set up current location to point to report location
-// const Location: React.FC<MapComponentProps> = ({
-//   center = [51.505, -0.09],
-//   zoom = 13,
-//   markers = [],
-//   onMapReady,
-// }, incidentID) => {
-//   return <Map />;
-// };
-
 export function Location({ incidentID }: MapComponentProps) {
   // Note: need easy way for user to change values
   const defaultLocation: number[] = [122.2333324, 10.6499974];
