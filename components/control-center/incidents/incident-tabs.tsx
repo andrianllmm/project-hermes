@@ -106,5 +106,3 @@ export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
     </div>
   );
 }
-
-export default ReportContainer;
