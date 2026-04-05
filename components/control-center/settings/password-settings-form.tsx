@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 import { passwordSchema } from '@/lib/auth/schemas';
 import { createClient } from '@/lib/supabase/client';
@@ -27,9 +28,11 @@ type InlineMessage = {
   text: string;
 };
 
-export function PasswordSettingsForm() {
+export function PasswordSettingsForm({ email }: { email: string | null }) {
+  const [oldPassword, setOldPassword] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPasswordError, setOldPasswordError] = useState<string | null>(null);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [confirmError, setConfirmError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -38,8 +41,16 @@ export function PasswordSettingsForm() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
+    setOldPasswordError(null);
     setPasswordErrors([]);
     setConfirmError(null);
+
+    const normalizedOldPassword = oldPassword.trim();
+
+    if (!normalizedOldPassword) {
+      setOldPasswordError('Enter your current password.');
+      return;
+    }
 
     const validatedPassword = passwordSchema.safeParse(password);
 
@@ -58,10 +69,28 @@ export function PasswordSettingsForm() {
       return;
     }
 
+    if (!email) {
+      setMessage({
+        status: 'error',
+        text: 'No account email is available for password verification.',
+      });
+      return;
+    }
+
     const supabase = createClient();
     setPending(true);
 
     try {
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email,
+        password: normalizedOldPassword,
+      });
+
+      if (verifyError) {
+        setOldPasswordError('Old password is incorrect.');
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: nextPassword,
       });
@@ -70,6 +99,7 @@ export function PasswordSettingsForm() {
         throw error;
       }
 
+      setOldPassword('');
       setPassword('');
       setConfirmPassword('');
       setMessage({
@@ -94,12 +124,27 @@ export function PasswordSettingsForm() {
       <CardHeader>
         <CardTitle>Security</CardTitle>
         <CardDescription>
-          Change your password for the current account session.
+          Change your password here or use the email reset flow from login.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <FieldGroup>
+            <Field data-invalid={Boolean(oldPasswordError) || undefined}>
+              <FieldLabel htmlFor="settings-old-password">
+                Old password
+              </FieldLabel>
+              <Input
+                id="settings-old-password"
+                type="password"
+                autoComplete="current-password"
+                value={oldPassword}
+                onChange={(event) => setOldPassword(event.target.value)}
+                aria-invalid={Boolean(oldPasswordError) || undefined}
+              />
+              <FieldError>{oldPasswordError}</FieldError>
+            </Field>
+
             <Field data-invalid={passwordErrors.length > 0 || undefined}>
               <FieldLabel htmlFor="settings-password">New password</FieldLabel>
               <Input
@@ -148,7 +193,13 @@ export function PasswordSettingsForm() {
             </p>
           ) : null}
 
-          <div className="flex justify-end">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              Reset password by email
+            </Link>
             <Button type="submit" disabled={pending}>
               {pending ? 'Updating...' : 'Update password'}
             </Button>

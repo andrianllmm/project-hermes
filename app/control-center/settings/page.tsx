@@ -19,7 +19,7 @@ export default async function Page() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div className="flex flex-col gap-6">
           <ProfileSettingsForm initialFullName={viewer.fullName} />
-          <PasswordSettingsForm />
+          <PasswordSettingsForm email={viewer.email} />
         </div>
 
         <div className="flex flex-col gap-6">
