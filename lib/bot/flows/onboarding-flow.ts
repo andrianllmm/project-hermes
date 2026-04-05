@@ -117,19 +117,50 @@ export const onboardingFlow: Flow = {
 
       const supabase = createAdminClient();
 
-      // Insert resident
-      const { error } = await supabase.from('residents').insert({
-        platform: thread.adapter.name as 'telegram' | 'messenger',
-        platform_user_id: thread.id,
-        thread_id: thread.id,
-        name,
-        language: language as ResidentLanguage,
-        location: pointToString(normalizedLocation),
-      });
+      const selectedLanguage = language as ResidentLanguage;
 
-      if (error) {
-        console.error('Failed to insert resident:', error);
+      const { data: existingResident, error: existingResidentError } =
+        await supabase
+          .from('residents')
+          .select('id, language')
+          .eq('thread_id', thread.id)
+          .maybeSingle();
+
+      if (existingResidentError) {
+        console.error(
+          'Failed to read existing resident:',
+          existingResidentError
+        );
         throw new Error('Failed to save your data. Please try again later.');
+      }
+
+      if (!existingResident) {
+        const { error: insertError } = await supabase.from('residents').insert({
+          platform: thread.adapter.name as 'telegram' | 'messenger',
+          platform_user_id: thread.id,
+          thread_id: thread.id,
+          name,
+          language: selectedLanguage,
+          location: pointToString(normalizedLocation),
+        });
+
+        if (insertError) {
+          console.error('Failed to insert resident:', insertError);
+          throw new Error('Failed to save your data. Please try again later.');
+        }
+      } else if (existingResident.language !== selectedLanguage) {
+        const { error: updateLanguageError } = await supabase
+          .from('residents')
+          .update({ language: selectedLanguage })
+          .eq('id', existingResident.id);
+
+        if (updateLanguageError) {
+          console.error(
+            'Failed to update resident language:',
+            updateLanguageError
+          );
+          throw new Error('Failed to save your data. Please try again later.');
+        }
       }
 
       // Render success message using card renderer in the resident's selected language

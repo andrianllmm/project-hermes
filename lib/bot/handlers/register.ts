@@ -1,5 +1,6 @@
 import type { BotInstance } from '@/lib/bot/chat';
 import { flowEngine } from '@/lib/bot/flows/flow-engine';
+import { getThreadLocaleFromState } from '@/lib/bot/flows/flow-locale';
 import { flowRegistry } from '@/lib/bot/flows/flow-registry';
 import type { Flow, FlowThreadState } from '@/lib/bot/flows/flow-types';
 import {
@@ -52,13 +53,24 @@ export function registerMessageHandlers(bot: BotInstance) {
     });
   }
 
+  async function resolveThreadLocale(
+    thread: BotThread
+  ): Promise<ResidentLocale> {
+    const cachedLocale = await getThreadLocaleFromState(thread);
+    if (cachedLocale) {
+      return cachedLocale;
+    }
+
+    return resolveResidentLocale(thread.id);
+  }
+
   async function startFlow(
     thread: BotThread,
     flow: Flow,
     context: { hasResident: boolean },
     visitedFlowIds: Set<string> = new Set()
   ): Promise<boolean> {
-    const locale = await resolveResidentLocale(thread.id);
+    const locale = await resolveThreadLocale(thread);
 
     if (visitedFlowIds.has(flow.id)) {
       console.error(`Detected cyclic flow fallback while starting ${flow.id}`);
@@ -290,7 +302,7 @@ export function registerMessageHandlers(bot: BotInstance) {
       }
 
       // Resolve locale for the resident
-      const locale = await resolveResidentLocale((thread as BotThread).id);
+      const locale = await resolveThreadLocale(thread as BotThread);
 
       const welcomeMsg = hasResident
         ? translate('handler.start.welcome_back', locale)
@@ -313,7 +325,7 @@ export function registerMessageHandlers(bot: BotInstance) {
 
       // Allow user to stop the bot
       if (normalizeText(userText) === 'stop') {
-        const locale = await resolveResidentLocale(thread.id);
+        const locale = await resolveThreadLocale(thread as BotThread);
         await thread.post(translate('handler.stop', locale));
         await thread.unsubscribe();
         return;
@@ -333,7 +345,7 @@ export function registerMessageHandlers(bot: BotInstance) {
       const state = (await thread.state) as FlowThreadState | null;
 
       if (!state) {
-        const locale = await resolveResidentLocale(thread.id);
+        const locale = await resolveThreadLocale(thread as BotThread);
         await thread.post(buildAvailableCommandHint(locale));
         return;
       }
@@ -371,7 +383,7 @@ export function registerMessageHandlers(bot: BotInstance) {
       });
     } catch (error) {
       console.error('Error handling action event:', error);
-      const locale = await resolveResidentLocale(event.thread.id);
+      const locale = await resolveThreadLocale(event.thread as BotThread);
       await event.thread.post(translate('handler.error', locale));
     }
   });

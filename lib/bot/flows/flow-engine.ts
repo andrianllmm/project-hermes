@@ -1,5 +1,5 @@
 import type { BotThread } from '@/lib/bot/types';
-import { DEFAULT_LOCALE } from '../i18n';
+import { DEFAULT_LOCALE, isSupportedLocale } from '../i18n';
 import type { ResidentLocale } from '../i18n/types';
 import { stepHandlerRegistry } from '../steps/step-handler-registry';
 import type { Step } from '../steps/step-types';
@@ -178,6 +178,13 @@ class FlowEngine {
 
     // Parse succeeded - store value and determine next step
     const dataKey = currentStep.dataKey || currentStep.id;
+    let nextLocale = state.locale;
+
+    // Keep locale in thread state in-sync with language preference selection.
+    if (dataKey === 'language' && isSupportedLocale(parseResult.value)) {
+      nextLocale = parseResult.value;
+    }
+
     let updatedData = {
       ...state.data,
       [dataKey]: parseResult.value,
@@ -256,7 +263,7 @@ class FlowEngine {
       stepIndex: nextStepIndex,
       data: updatedData,
       pendingReturnStepId,
-      locale: state.locale,
+      locale: nextLocale,
       startedAt: state.startedAt,
       completedAt: isComplete ? Date.now() : undefined,
     };
