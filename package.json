@@ -22,6 +22,7 @@
     ]
   },
   "dependencies": {
+    "@ai-sdk/deepgram": "^2.0.27",
     "@ai-sdk/google": "^3.0.53",
     "@ai-sdk/react": "^3.0.143",
     "@chat-adapter/state-pg": "^4.23.0",
@@ -40,6 +41,7 @@
     "@tanstack/react-table": "^8.21.3",
     "ai": "^6.0.141",
     "chat": "^4.23.0",
+    "chat-adapter-messenger": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
