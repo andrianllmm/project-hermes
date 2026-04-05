@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchIncidents, Incident } from '@/lib/supabase/reports';
+import { fetchIncidents } from '@/lib/supabase/reports';
 import * as React from 'react';
 import KanbanContent from './kanban-view/content';
 import ChatBox from './report-view/chatbox';
@@ -11,27 +11,32 @@ interface TabsProps {
   defaultTab?: string;
 }
 
-function getLatestIncident(): string | null {
-  const latestIncident = fetchIncidents(1);
-  let latestIncidentID: string | null = null;
+// function getLatestIncident(): string | null {
+//   const latestIncident = fetchIncidents(1);
+//   let latestIncidentID: string | null = null;
 
-  latestIncident.then((incident: Incident[] | null) => {
-    if (incident) latestIncidentID = incident[0].id;
-  });
+//   latestIncident.then((incident: Incident[] | null) => {
+//     if (incident) latestIncidentID = incident[0].id;
+//   });
 
-  return latestIncidentID;
-}
+//   return latestIncidentID;
+// }
 
 export function IncidentTabs({ defaultTab = 'reports' }: TabsProps) {
-  // prevent scrolling by the user
-  React.useEffect(() => {
-    document.body.style.overflow = 'hidden';
-  }, []);
-
   const [activeTab, setActiveTab] = React.useState(defaultTab);
   const [selectedIncidentID, setSelectedIncidentID] = React.useState<
     string | null
-  >(getLatestIncident());
+  >(null);
+
+  React.useEffect(() => {
+    const loadInitialIncident = async () => {
+      const incidents = await fetchIncidents(1);
+      if (incidents && incidents.length > 0) {
+        setSelectedIncidentID(incidents[0].id);
+      }
+    };
+    loadInitialIncident();
+  }, []);
 
   const handleOnIncidentClick = (clickedIncidentID: string) => {
     setSelectedIncidentID(clickedIncidentID);
