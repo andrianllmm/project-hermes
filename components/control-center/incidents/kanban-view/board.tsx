@@ -61,6 +61,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDateTime } from '@/lib/date';
 import { moveIncidentStatusAction } from '@/lib/incidents/actions';
@@ -876,17 +877,21 @@ export default function IncidentKanbanBoard({
               />
             </div>
           ) : (
-            <div className="grid min-h-0 flex-1 grid-cols-5 gap-2 pb-1 xl:gap-4">
-              {INCIDENT_STATUSES.map((status) => (
-                <IncidentColumn
-                  key={status}
-                  status={status}
-                  incidents={groupedIncidents[status]}
-                  pendingMoveId={pendingMoveId}
-                  onOpenIncident={openIncident}
-                />
-              ))}
-            </div>
+            <ScrollArea className="min-h-0 flex-1 pb-1">
+              <div className="flex h-full min-h-0 w-max min-w-full gap-2 pr-1 xl:gap-4">
+                {INCIDENT_STATUSES.map((status) => (
+                  <IncidentColumn
+                    key={status}
+                    status={status}
+                    incidents={groupedIncidents[status]}
+                    pendingMoveId={pendingMoveId}
+                    onOpenIncident={openIncident}
+                    className="w-80 min-w-80"
+                  />
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           )}
           <DragOverlay>
             {activeIncident ? (
