@@ -1,6 +1,7 @@
 'use client';
 
-import MapLibreGL, { type PopupOptions, type MarkerOptions } from 'maplibre-gl';
+import { Loader2, Locate, Maximize, Minus, Plus, X } from 'lucide-react';
+import MapLibreGL, { type MarkerOptions, type PopupOptions } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   createContext,
@@ -16,7 +17,12 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Minus, Plus, Locate, Maximize, Loader2 } from 'lucide-react';
+import {
+  MapPolygonDrawPresenter,
+  type MapPolygonDrawMode,
+  type MapPolygonDrawProps,
+  type MapPolygonFeature,
+} from './map-polygon-draw';
 
 import { cn } from '@/lib/utils';
 
@@ -775,11 +781,13 @@ function ControlButton({
   label,
   children,
   disabled = false,
+  className,
 }: {
   onClick: () => void;
   label: string;
   children: React.ReactNode;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <button
@@ -788,7 +796,8 @@ function ControlButton({
       type="button"
       className={cn(
         'hover:bg-accent dark:hover:bg-accent/40 flex size-8 items-center justify-center transition-colors',
-        disabled && 'pointer-events-none cursor-not-allowed opacity-50'
+        disabled && 'pointer-events-none cursor-not-allowed opacity-50',
+        className
       )}
       disabled={disabled}
     >
@@ -1745,6 +1754,12 @@ function MapClusterLayer<
   return null;
 }
 
+function MapPolygonDraw(props: MapPolygonDrawProps) {
+  const { map, isLoaded } = useMap();
+
+  return <MapPolygonDrawPresenter map={map} isLoaded={isLoaded} {...props} />;
+}
+
 export {
   Map,
   useMap,
@@ -1757,7 +1772,14 @@ export {
   MapControls,
   MapRoute,
   MapHeatmapLayer,
+  MapPolygonDraw,
   MapClusterLayer,
 };
 
-export type { MapRef, MapViewport };
+export type {
+  MapPolygonDrawMode,
+  MapPolygonDrawProps,
+  MapPolygonFeature,
+  MapRef,
+  MapViewport,
+};

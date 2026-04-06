@@ -480,6 +480,14 @@ export type Database = {
         Args: { target_email: string };
         Returns: undefined;
       };
+      residents_within_polygon: {
+        Args: { target_polygon: Json };
+        Returns: {
+          id: string;
+          platform: Database['public']['Enums']['resident_platform'];
+          thread_id: string;
+        }[];
+      };
       set_staff_role: {
         Args: {
           target_role: Database['public']['Enums']['app_role'];
