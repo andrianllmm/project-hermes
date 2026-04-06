@@ -2,14 +2,12 @@ import type { BotInstance } from '@/lib/bot/chat';
 import { flowEngine } from '@/lib/bot/flows/flow-engine';
 import { getThreadLocaleFromState } from '@/lib/bot/flows/flow-locale';
 import { flowRegistry } from '@/lib/bot/flows/flow-registry';
-import { fetchResidentIncidentStatuses } from '@/lib/bot/flows/incident-reporting-service';
 import type { Flow, FlowThreadState } from '@/lib/bot/flows/flow-types';
-import {
-  localizeIncidentSeverity,
-  localizeIncidentStatus,
-} from '@/lib/bot/i18n';
+import { fetchResidentIncidentStatuses } from '@/lib/bot/flows/incident-reporting-service';
 import {
   DEFAULT_LOCALE,
+  localizeIncidentSeverity,
+  localizeIncidentStatus,
   resolveResidentLocale,
   translate,
 } from '@/lib/bot/i18n';

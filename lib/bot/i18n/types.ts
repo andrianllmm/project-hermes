@@ -53,6 +53,7 @@ export type MessageKey =
   | 'incident.freeform.prompt'
   | 'incident.freeform.location.missing'
   | 'incident.freeform.location.label'
+  | 'incident.freeform.review.report_label'
   | 'incident.freeform.submitted.title'
   | 'incident.freeform.submitted.message'
   // Generic step handlers

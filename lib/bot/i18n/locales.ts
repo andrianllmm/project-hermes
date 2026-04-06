@@ -229,6 +229,11 @@ export const messageCatalog: MessageCatalog = {
     fil: 'Sabihin kung saan nangyari ang insidente.',
     hil: 'Palihog ihatag ang lokasyon sang insidente.',
   },
+  'incident.freeform.review.report_label': {
+    eng: 'Report Details',
+    fil: 'Mga Detalye ng Ulat',
+    hil: 'Mga Detalye sang Report',
+  },
   'incident.freeform.submitted.title': {
     eng: 'Report Submitted',
     fil: 'Ulat Naipadala',
