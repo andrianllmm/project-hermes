@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import {
   Image as ImageIcon,
   Loader2,
@@ -148,7 +149,7 @@ function MarkdownMessage({ content }: { content: string }) {
 export function WebChatInterface({
   apiEndpoint = '/api/web-chat',
   className,
-  description = 'Use HERMES Web Chat as an alternative interface to the same chatbot pipeline.',
+  description = '',
   title = 'HERMES Web Chat',
   userName = 'web-chat-user',
 }: WebChatInterfaceProps) {
@@ -442,15 +443,20 @@ export function WebChatInterface({
   }
 
   return (
-    <Card className={className}>
-      <CardHeader className="border-b">
+    <Card
+      className={cn(
+        'flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-card shadow-sm',
+        className
+      )}
+    >
+      <CardHeader className="border-b bg-muted/20 px-4 py-3 sm:px-5">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
-      <CardContent className="h-112 p-0 sm:h-136">
+      <CardContent className="min-h-0 flex-1 p-0">
         <ScrollArea className="h-full w-full">
-          <div className="flex flex-col gap-3 p-4">
+          <div className="flex flex-col gap-3 px-3 py-4 sm:px-4">
             {messages.length === 0 && !isLoading ? (
               <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
                 {helperText}
@@ -470,7 +476,7 @@ export function WebChatInterface({
                   className={`flex ${isAssistant ? 'justify-start' : 'justify-end'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                    className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm sm:max-w-[78%] ${
                       isAssistant
                         ? 'bg-muted text-foreground'
                         : 'bg-primary text-primary-foreground'
@@ -595,7 +601,7 @@ export function WebChatInterface({
         </ScrollArea>
       </CardContent>
 
-      <CardFooter className="border-t p-3">
+      <CardFooter className="border-t bg-background/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur sm:p-3">
         <div className="flex w-full flex-col gap-3">
           {pendingAttachment || pendingLocation ? (
             <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/50 p-2 text-xs">
@@ -643,13 +649,14 @@ export function WebChatInterface({
 
           <form
             onSubmit={handleSubmit}
-            className="flex w-full items-center gap-2"
+            className="flex w-full flex-col gap-2 sm:flex-row sm:items-center"
           >
             <Input
               value={input}
               onChange={(event) => setInput(event.target.value)}
               placeholder="Type a message..."
               disabled={isLoading || isBootstrapping}
+              className="h-11 w-full sm:flex-1"
             />
 
             <input
@@ -664,58 +671,62 @@ export function WebChatInterface({
               type="file"
             />
 
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              disabled={isLoading || isBootstrapping}
-              onClick={() => {
-                imageInputRef.current?.click();
-              }}
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center justify-between gap-2 sm:justify-end">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  disabled={isLoading || isBootstrapping}
+                  onClick={() => {
+                    imageInputRef.current?.click();
+                  }}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                </Button>
 
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              disabled={isLoading || isBootstrapping}
-              onClick={() => {
-                void handleLocationShare();
-              }}
-            >
-              <MapPin className="h-4 w-4" />
-            </Button>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  disabled={isLoading || isBootstrapping}
+                  onClick={() => {
+                    void handleLocationShare();
+                  }}
+                >
+                  <MapPin className="h-4 w-4" />
+                </Button>
 
-            <Button
-              type="button"
-              size="icon"
-              variant={isRecording ? 'destructive' : 'outline'}
-              disabled={isLoading || isBootstrapping}
-              onClick={() => {
-                if (isRecording) {
-                  stopVoiceRecording();
-                  return;
-                }
+                <Button
+                  type="button"
+                  size="icon"
+                  variant={isRecording ? 'destructive' : 'outline'}
+                  disabled={isLoading || isBootstrapping}
+                  onClick={() => {
+                    if (isRecording) {
+                      stopVoiceRecording();
+                      return;
+                    }
 
-                void startVoiceRecording();
-              }}
-            >
-              {isRecording ? (
-                <Square className="h-4 w-4" />
-              ) : (
-                <Mic className="h-4 w-4" />
-              )}
-            </Button>
+                    void startVoiceRecording();
+                  }}
+                >
+                  {isRecording ? (
+                    <Square className="h-4 w-4" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
 
-            <Button type="submit" size="icon" disabled={isSendDisabled}>
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
+              <Button type="submit" size="icon" disabled={isSendDisabled}>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </form>
         </div>
       </CardFooter>
