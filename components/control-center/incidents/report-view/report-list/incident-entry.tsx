@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -11,18 +10,15 @@ import {
 } from '@/components/ui/card';
 import { type Incident } from '@/lib/supabase/reports';
 import { cn } from '@/lib/utils';
+import {
+  IncidentSeverityBadge,
+  IncidentStatusBadge,
+} from '../../incident-badges';
 
 interface IncidentButtonProps {
   incident: Incident;
   isSelected?: boolean;
   onClick?: (id: string) => void;
-}
-
-function formatLabel(value: string): string {
-  return value
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
 }
 
 function formatIncidentTime(value: string): string {
@@ -33,37 +29,6 @@ function formatIncidentTime(value: string): string {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(date);
-}
-
-function getSeverityVariant(
-  severity: string
-): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (severity) {
-    case 'critical':
-    case 'high':
-      return 'destructive';
-    case 'moderate':
-      return 'secondary';
-    case 'low':
-      return 'outline';
-    default:
-      return 'default';
-  }
-}
-
-function getStatusVariant(
-  status: string
-): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'resolved':
-      return 'secondary';
-    case 'dismissed':
-      return 'outline';
-    case 'new':
-      return 'default';
-    default:
-      return 'default';
-  }
 }
 
 export function IncidentEntry({
@@ -101,12 +66,8 @@ export function IncidentEntry({
             {incidentType}
           </CardTitle>
           <div className="shrink-0 flex flex-wrap items-center justify-end gap-1.5">
-            <Badge variant={getSeverityVariant(incident.severity)}>
-              {formatLabel(incident.severity)}
-            </Badge>
-            <Badge variant={getStatusVariant(incident.status)}>
-              {formatLabel(incident.status)}
-            </Badge>
+            <IncidentSeverityBadge severity={incident.severity} />
+            <IncidentStatusBadge status={incident.status} />
           </div>
         </div>
       </CardHeader>

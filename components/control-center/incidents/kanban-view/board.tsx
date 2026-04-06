@@ -28,6 +28,11 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 
+import {
+  INCIDENT_STATUS_DOT_CLASS,
+  IncidentSeverityBadge,
+  IncidentStatusBadge,
+} from '@/components/control-center/incidents/incident-badges';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -109,29 +114,6 @@ type IncidentCardProps = {
   isMovePending?: boolean;
 };
 
-const STATUS_COLUMN_DOT_CLASS: Record<IncidentStatus, string> = {
-  new: 'bg-chart-4',
-  validated: 'bg-chart-2',
-  in_progress: 'bg-chart-1',
-  resolved: 'bg-chart-5',
-  dismissed: 'bg-destructive',
-};
-
-const SEVERITY_DOT_CLASS: Record<IncidentSeverity, string> = {
-  low: 'bg-muted-foreground',
-  moderate: 'bg-chart-4',
-  high: 'bg-chart-1',
-  critical: 'bg-destructive',
-};
-
-const STATUS_BADGE_CLASS: Record<IncidentStatus, string> = {
-  new: 'border-chart-4/30 bg-chart-4/10 text-foreground',
-  validated: 'border-chart-2/30 bg-chart-2/10 text-foreground',
-  in_progress: 'border-chart-1/30 bg-chart-1/10 text-foreground',
-  resolved: 'border-chart-5/30 bg-chart-5/10 text-foreground',
-  dismissed: 'border-destructive/30 bg-destructive/10 text-destructive',
-};
-
 function getIncidentSnippet(incident: IncidentBoardEntry) {
   return (
     incident.locationDescription ||
@@ -181,31 +163,6 @@ function matchesIncidentFilters(
     .includes(normalizedSearch);
 }
 
-function IncidentStatusBadge({ status }: { status: IncidentStatus }) {
-  return (
-    <Badge
-      variant="outline"
-      className={cn('gap-1.5 border', STATUS_BADGE_CLASS[status])}
-    >
-      <span
-        className={cn('size-1.5 rounded-full', STATUS_COLUMN_DOT_CLASS[status])}
-      />
-      {formatIncidentStatusLabel(status)}
-    </Badge>
-  );
-}
-
-function IncidentSeverityBadge({ severity }: { severity: IncidentSeverity }) {
-  return (
-    <Badge variant="outline" className="gap-1.5">
-      <span
-        className={cn('size-1.5 rounded-full', SEVERITY_DOT_CLASS[severity])}
-      />
-      {formatIncidentSeverityLabel(severity)}
-    </Badge>
-  );
-}
-
 function IncidentColumn({
   status,
   incidents,
@@ -232,7 +189,7 @@ function IncidentColumn({
           <span
             className={cn(
               'size-2 rounded-full',
-              STATUS_COLUMN_DOT_CLASS[status]
+              INCIDENT_STATUS_DOT_CLASS[status]
             )}
           />
           <div className="min-w-0">
