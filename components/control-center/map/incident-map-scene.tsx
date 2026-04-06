@@ -361,7 +361,7 @@ export function IncidentMapScene({
         </Map>
         {!hasMarkers ? (
           <div className="pointer-events-none absolute inset-x-6 top-6 z-10 rounded-md border bg-background/95 px-3 py-2 text-sm text-muted-foreground shadow-sm">
-            No SQL-backed incident markers found.
+            No incidents found.
           </div>
         ) : locationStatus === 'requesting' ? (
           <div className="pointer-events-none absolute inset-x-6 top-6 z-10 rounded-md border bg-background/95 px-3 py-2 text-sm text-muted-foreground shadow-sm">
