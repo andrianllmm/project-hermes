@@ -26,6 +26,7 @@ interface Message {
 }
 
 interface ChatBoxProps {
+  incidentId?: string | null;
   onSendMessage?: (message: string) => void | Promise<void>;
   isLoading?: boolean;
   messages?: Message[];
@@ -34,15 +35,17 @@ interface ChatBoxProps {
 }
 
 export function ChatBox({
+  incidentId,
   onSendMessage,
   isLoading = false,
-  messages: initialMessages = [],
+  messages: initialMessages,
   title = 'Chat',
   description = 'Ask me anything',
 }: ChatBoxProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(isLoading);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -56,6 +59,82 @@ export function ChatBox({
   useEffect(() => {
     setLoading(isLoading);
   }, [isLoading]);
+
+  // Keep local messages in sync when parent-provided messages change.
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+    }
+  }, [initialMessages]);
+
+  // Load thread history from Chat SDK for the selected incident.
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadHistory = async () => {
+      if (!incidentId) {
+        if (isMounted) {
+          setMessages([]);
+        }
+        return;
+      }
+
+      if (isMounted) {
+        setIsHistoryLoading(true);
+      }
+
+      try {
+        const response = await fetch(
+          `/api/incidents/${incidentId}/thread-messages`,
+          {
+            method: 'GET',
+            cache: 'no-store',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to load thread messages');
+        }
+
+        const payload = (await response.json()) as {
+          messages?: Array<{
+            id: string;
+            content: string;
+            role: 'user' | 'assistant';
+            timestamp: string;
+          }>;
+        };
+
+        if (!isMounted) {
+          return;
+        }
+
+        const mappedMessages = (payload.messages ?? []).map((message) => ({
+          id: message.id,
+          content: message.content,
+          role: message.role,
+          timestamp: new Date(message.timestamp),
+        }));
+
+        setMessages(mappedMessages);
+      } catch (error) {
+        console.error('Error loading incident thread history:', error);
+        if (isMounted) {
+          setMessages([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [incidentId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +177,7 @@ export function ChatBox({
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea className="h-full w-full">
           <div className="p-4 space-y-4">
-            {messages.length === 0 ? (
+            {messages.length === 0 && !isHistoryLoading ? (
               <div className="flex items-center justify-center h-full text-center py-12">
                 <div className="space-y-2">
                   <p className="text-muted-foreground">No messages yet</p>
@@ -123,7 +202,9 @@ export function ChatBox({
                     }`}
                   >
                     <CardContent className="p-3">
-                      <p className="text-sm break-words">{message.content}</p>
+                      <p className="text-sm wrap-break-word">
+                        {message.content}
+                      </p>
                       <span className="text-xs opacity-70 mt-1 block">
                         {message.timestamp.toLocaleTimeString([], {
                           hour: '2-digit',
@@ -135,7 +216,7 @@ export function ChatBox({
                 </div>
               ))
             )}
-            {loading && (
+            {(loading || isHistoryLoading) && (
               <div className="flex justify-start">
                 <Card className="bg-muted">
                   <CardContent className="p-3">
@@ -157,12 +238,12 @@ export function ChatBox({
               placeholder="Type your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              disabled={loading}
+              disabled={loading || isHistoryLoading}
               className="flex-1"
             />
             <Button
               type="submit"
-              disabled={loading || !input.trim()}
+              disabled={loading || isHistoryLoading || !input.trim()}
               size="icon"
             >
               {loading ? (
