@@ -56,7 +56,7 @@ function KanbanContent({
 
   return (
     <CategoryCard title={title} className={className}>
-      <ScrollArea className="h-full rounded-md flex h-[calc(100vh-275px)]">
+      <ScrollArea className="h-full rounded-md flex h-[calc(100vh-250px)]">
         <div className="p-4">
           {loading ? (
             <p className="text-sm text-gray-500">Loading incidents...</p>
