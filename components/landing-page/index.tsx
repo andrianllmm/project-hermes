@@ -8,6 +8,7 @@ import { AboutSection } from './components/IntroducingHermes';
 import { Navbar } from './components/NavBar';
 import { StatSection } from './components/StatSection';
 import { TeamSection } from './components/TeamSection';
+import { TestimonialsSection } from './components/Testimonials';
 
 export default function LandingPage() {
   return (
@@ -27,6 +28,7 @@ export default function LandingPage() {
         <FeatureSection />
         <HowItWorks />
         <TeamSection />
+        <TestimonialsSection />
       </div>
     </main>
   );
