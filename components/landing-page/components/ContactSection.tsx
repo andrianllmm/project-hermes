@@ -58,7 +58,7 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-24 sm:py-32">
+    <section id="contact" className="py-24 -mt-20 w-full relative sm:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-16">
           <Badge variant="outline" className="mb-4">

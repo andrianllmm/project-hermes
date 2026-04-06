@@ -5,6 +5,7 @@ import { ContactSection } from './components/ContactSection';
 import { CTASection } from './components/CtaSection';
 import { FaqSection } from './components/FaqSection';
 import { FeatureSection } from './components/FeatureSection';
+import Footer from './components/Footer';
 import { NewHeroSection as HeroSection } from './components/HeroSection';
 import { HowItWorks } from './components/HowItWorks';
 import { AboutSection } from './components/IntroducingHermes';
@@ -40,6 +41,7 @@ export default function LandingPage() {
         <FaqSection />
         <CTASection />
         <ContactSection />
+        <Footer />
       </div>
     </main>
   );
