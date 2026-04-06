@@ -131,7 +131,7 @@ export function NewHeroSection() {
             {/* Thumbnail — visible only before first play */}
             <HeroVideoDialog
               animationStyle="from-center"
-              videoSrc="https://www.youtube.com/embed/qh3NGpYRG3I?si=4rb-zSdDkVK9qxxb"
+              videoSrc={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || ''}
               thumbnailSrc={demoThumbnail.src}
               thumbnailAlt="Hero Video"
               className={hasStarted ? 'hidden' : ''}
