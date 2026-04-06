@@ -1,5 +1,8 @@
 import { AuthButton } from '@/components/auth-button';
 import { Suspense } from 'react';
+import { StepOneIllustration } from '../StepOne';
+import { StepThreeIllustration } from '../StepThree';
+import { StepTwoIllustration } from '../StepTwo';
 import { ChallengesSection } from './components/ChallengeSection';
 import { FeatureSection } from './components/FeatureSection';
 import { NewHeroSection as HeroSection } from './components/HeroSection';
@@ -23,6 +26,9 @@ export default function LandingPage() {
         <ChallengesSection />
         <AboutSection />
         <FeatureSection />
+        <StepOneIllustration />
+        <StepTwoIllustration />
+        <StepThreeIllustration />
       </div>
     </main>
   );
