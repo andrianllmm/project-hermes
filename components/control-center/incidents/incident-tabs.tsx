@@ -58,7 +58,7 @@ export function IncidentTabs() {
             orientation="horizontal"
             className="h-[calc(100vh-140px)] max-h-[calc(100vh-140px)] w-full rounded-xl border bg-background"
           >
-            <ResizablePanel defaultSize="33%" minSize="20%">
+            <ResizablePanel defaultSize="32%" minSize="20%">
               <div className="h-full min-h-0 overflow-hidden p-3">
                 <IncidentCard onIncidentSelect={handleOnIncidentClick} />
               </div>
@@ -70,7 +70,7 @@ export function IncidentTabs() {
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize="33%" minSize="30%">
+            <ResizablePanel defaultSize="35%" minSize="30%">
               <div className="h-full min-h-0 overflow-hidden p-3">
                 <ReportContainer incident={selectedIncidentID} />
               </div>

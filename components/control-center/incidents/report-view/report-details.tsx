@@ -175,10 +175,10 @@ export default function ReportDetails({ incidentID }: ReportDetailsProps) {
 
   return (
     <form className="w-full p-2">
-      <h2 className="text-sm text-muted-foreground my-2 mb-8">
+      <h2 className="text-sm text-muted-foreground my-2 mb-4">
         Report ID: {formData.id}
       </h2>
-      <FieldGroup className="w-full mb-8">
+      <FieldGroup className="w-full mb-4">
         <Field orientation="horizontal" className="flex flex-1 w-full">
           <Button
             onClick={updateIncident}
