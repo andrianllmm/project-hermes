@@ -172,6 +172,46 @@ export const messageCatalog: MessageCatalog = {
     fil: 'Nagkaroon ng error habang ipinapasa ang ulat mo. Subukan muli.',
     hil: 'May nagluntad nga error samtang ginapadala ang imo report. Palihog liwat.',
   },
+  'incident.status.title': {
+    eng: 'Your Recent Report Statuses',
+    fil: 'Mga Status ng Iyong Huling Ulat',
+    hil: 'Mga Status sang Imo Bag-o nga Report',
+  },
+  'incident.status.empty': {
+    eng: 'You do not have incident reports yet. Send "report" or "quick report" to submit one.',
+    fil: 'Wala ka pang incident report. Ipadala ang "report" o "quick report" para mag-submit.',
+    hil: 'Wala ka pa sang incident report. Ipadala ang "report" ukon "quick report" para magsubmit.',
+  },
+  'incident.status.updated_prefix': {
+    eng: 'Updated',
+    fil: 'Na-update',
+    hil: 'Na-update',
+  },
+  'incident.status.new': {
+    eng: 'New',
+    fil: 'Bago',
+    hil: 'Bag-o',
+  },
+  'incident.status.validated': {
+    eng: 'Validated',
+    fil: 'Na-validate',
+    hil: 'Na-validate',
+  },
+  'incident.status.in_progress': {
+    eng: 'In Progress',
+    fil: 'Isinasagawa',
+    hil: 'Ginatrabaho',
+  },
+  'incident.status.resolved': {
+    eng: 'Resolved',
+    fil: 'Naresolba',
+    hil: 'Nasolbar',
+  },
+  'incident.status.dismissed': {
+    eng: 'Dismissed',
+    fil: 'Tinanggihan',
+    hil: 'Gindismiss',
+  },
 
   // Freeform incident flow
   'incident.freeform.prompt': {
@@ -297,6 +337,11 @@ export const messageCatalog: MessageCatalog = {
     eng: 'Update your profile details.',
     fil: 'I-update ang profile details mo.',
     hil: 'I-update ang profile details mo.',
+  },
+  'handler.start.option_status_desc': {
+    eng: 'Check the latest status of your reports.',
+    fil: 'Tingnan ang pinakabagong status ng mga ulat mo.',
+    hil: 'Susiha ang pinakabag-o nga status sang imo mga report.',
   },
   'handler.start.hint_tip': {
     eng: 'Tip: You can also type naturally, like "I want to report an incident."',

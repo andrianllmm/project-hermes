@@ -2,7 +2,12 @@ import type { BotInstance } from '@/lib/bot/chat';
 import { flowEngine } from '@/lib/bot/flows/flow-engine';
 import { getThreadLocaleFromState } from '@/lib/bot/flows/flow-locale';
 import { flowRegistry } from '@/lib/bot/flows/flow-registry';
+import { fetchResidentIncidentStatuses } from '@/lib/bot/flows/incident-reporting-service';
 import type { Flow, FlowThreadState } from '@/lib/bot/flows/flow-types';
+import {
+  localizeIncidentSeverity,
+  localizeIncidentStatus,
+} from '@/lib/bot/i18n';
 import {
   DEFAULT_LOCALE,
   resolveResidentLocale,
@@ -11,12 +16,14 @@ import {
 import type { ResidentLocale } from '@/lib/bot/i18n/types';
 import { renderIdleCommandCard } from '@/lib/bot/renderers/card-renderer';
 import type { BotThread } from '@/lib/bot/types';
+import { formatRelativeTime } from '@/lib/date';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 interface IdleCommands {
   guidedReportCommand: string;
   quickReportCommand: string;
   profileCommand: string;
+  statusCommand: string;
 }
 
 /**
@@ -39,7 +46,83 @@ export function registerMessageHandlers(bot: BotInstance) {
       profileCommand:
         flowRegistry.get('resident-thread-settings')?.start?.commands?.[0] ??
         'settings',
+      statusCommand: 'status',
     };
+  }
+
+  const STATUS_QUERY_COMMANDS = new Set([
+    'status',
+    'report status',
+    'report statuses',
+    'incident status',
+    'my report',
+    'my reports',
+  ]);
+
+  function getDateTimeLocale(locale: ResidentLocale): string {
+    if (locale === 'fil') {
+      return 'fil-PH';
+    }
+
+    if (locale === 'hil') {
+      return 'en-PH';
+    }
+
+    return 'en-PH';
+  }
+
+  async function handleReportStatusQuery(
+    thread: BotThread,
+    input: unknown,
+    locale: ResidentLocale
+  ): Promise<boolean> {
+    const normalizedInput = normalizeText(input);
+    if (!STATUS_QUERY_COMMANDS.has(normalizedInput)) {
+      return false;
+    }
+
+    try {
+      const statuses = await fetchResidentIncidentStatuses(thread, 5);
+
+      if (statuses.length === 0) {
+        await thread.post(translate('incident.status.empty', locale));
+        return true;
+      }
+
+      const dateLocale = getDateTimeLocale(locale);
+      const rows = statuses.map((item) => {
+        const statusLabel = localizeIncidentStatus(item.status, locale);
+        const severityLabel = localizeIncidentSeverity(item.severity, locale);
+        const updatedPrefix = translate(
+          'incident.status.updated_prefix',
+          locale
+        );
+        const updatedLabel = formatRelativeTime(item.updatedAt, dateLocale);
+
+        return [
+          item.incidentTypeName,
+          `${statusLabel} (${severityLabel})`,
+          `${updatedPrefix} ${updatedLabel}`,
+        ].join(' | ');
+      });
+
+      await thread.post(
+        [
+          translate('incident.status.title', locale),
+          ...rows.map((row) => `- ${row}`),
+        ].join('\n')
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error fetching report statuses:', error);
+      await thread.post(
+        error instanceof Error
+          ? error.message
+          : translate('handler.error', locale)
+      );
+      return true;
+    }
   }
 
   async function getResidentByThreadId(thread: BotThread): Promise<{
@@ -65,8 +148,12 @@ export function registerMessageHandlers(bot: BotInstance) {
     thread: BotThread,
     locale: ResidentLocale = DEFAULT_LOCALE
   ): Promise<void> {
-    const { guidedReportCommand, quickReportCommand, profileCommand } =
-      getIdleCommands();
+    const {
+      guidedReportCommand,
+      quickReportCommand,
+      profileCommand,
+      statusCommand,
+    } = getIdleCommands();
 
     await renderIdleCommandCard(thread, {
       title: translate('handler.start.hint_intro', locale),
@@ -88,6 +175,10 @@ export function registerMessageHandlers(bot: BotInstance) {
         {
           command: profileCommand,
           description: translate('handler.start.option_profile_desc', locale),
+        },
+        {
+          command: statusCommand,
+          description: translate('handler.start.option_status_desc', locale),
         },
       ],
     });
@@ -375,6 +466,16 @@ export function registerMessageHandlers(bot: BotInstance) {
       const hasResident = Boolean(resident);
 
       if (
+        await handleReportStatusQuery(
+          thread as BotThread,
+          userText,
+          await resolveThreadLocale(thread as BotThread)
+        )
+      ) {
+        return;
+      }
+
+      if (
         await handleFlowStartCommand(thread as BotThread, userText, {
           hasResident,
         })
@@ -423,6 +524,18 @@ export function registerMessageHandlers(bot: BotInstance) {
         typeof event.value === 'string' &&
         event.value.trim().length > 0
       ) {
+        const locale = await resolveThreadLocale(event.thread as BotThread);
+
+        if (
+          await handleReportStatusQuery(
+            event.thread as BotThread,
+            event.value,
+            locale
+          )
+        ) {
+          return;
+        }
+
         const resident = await getResidentByThreadId(event.thread as BotThread);
         const hasResident = Boolean(resident);
 
