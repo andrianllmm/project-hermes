@@ -17,7 +17,7 @@ export const ReportContainer: React.FC<ReportContainerProps> = ({
   return (
     <Tabs defaultValue="reportDetails" className="flex h-full w-full flex-col">
       <TabsList variant="default" className="w-full">
-        <TabsTrigger value="reportDetails">Report Details</TabsTrigger>
+        <TabsTrigger value="reportDetails">Details</TabsTrigger>
         <TabsTrigger value="location">Location</TabsTrigger>
       </TabsList>
       <TabsContent value="reportDetails" className="m-0 min-h-0 flex-1">
