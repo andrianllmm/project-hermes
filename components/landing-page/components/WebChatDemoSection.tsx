@@ -78,32 +78,18 @@ export async function WebChatDemoSection() {
   const demoMarkers = await loadLiveIncidentMarkers();
 
   return (
-    <section className="relative w-full px-4 py-8 sm:px-6 sm:py-12">
+    <section className="relative w-full px-4 py-8 sm:px-6 sm:py-12 mt-4 mb-16">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-            Live Web Chat Demo
-          </p>
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Experience HERMES through a chat and dashboard mock side by side.
-          </h2>
-          <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-            This in-page showcase uses the same chatbot flows and incident map
-            views used in production channels, so you can simulate real-world
-            reporting and coordination without leaving the website.
-          </p>
-        </div>
-
-        <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
+        <div className="grid gap-6 xl:grid-cols-2 items-center justify-center">
+          <div className="space-y-3 justify-center">
+            <div className="flex items-center justify-center gap-2">
               <Badge variant="secondary">Resident Chat</Badge>
               <span className="text-xs text-muted-foreground">
                 Mobile-first conversation mockup
               </span>
             </div>
 
-            <div className="mx-auto w-full max-w-[420px]">
+            <div className="mx-auto w-full max-w-105">
               <div className="relative rounded-[2.5rem] border border-foreground/15 bg-linear-to-b from-zinc-200 to-zinc-300 p-2 shadow-2xl dark:from-zinc-800 dark:to-zinc-900">
                 <div className="absolute left-1/2 top-2 h-5 w-36 -translate-x-1/2 rounded-b-2xl bg-zinc-900/95" />
 
@@ -120,8 +106,8 @@ export async function WebChatDemoSection() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
+          <div className="space-y-3 justify-center">
+            <div className="flex items-center justify-center gap-2">
               <Badge variant="secondary">Dashboard Mock</Badge>
               <span className="text-xs text-muted-foreground">
                 Incident map preview and status context
