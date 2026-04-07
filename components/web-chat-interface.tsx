@@ -163,13 +163,24 @@ export function WebChatInterface({
   const [isLoading, setIsLoading] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
+  const chatViewportRootRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordingChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const viewport = chatViewportRootRef.current?.querySelector<HTMLElement>(
+      '[data-slot="scroll-area-viewport"]'
+    );
+
+    if (!viewport) {
+      return;
+    }
+
+    viewport.scrollTo({
+      behavior: 'smooth',
+      top: viewport.scrollHeight,
+    });
   }, [messages, isLoading]);
 
   useEffect(() => {
@@ -455,150 +466,152 @@ export function WebChatInterface({
       </CardHeader>
 
       <CardContent className="min-h-0 flex-1 p-0">
-        <ScrollArea className="h-full w-full">
-          <div className="flex flex-col gap-3 px-3 py-4 sm:px-4">
-            {messages.length === 0 && !isLoading ? (
-              <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-                {helperText}
-              </div>
-            ) : null}
+        <div ref={chatViewportRootRef} className="h-full w-full">
+          <ScrollArea className="h-full w-full">
+            <div className="flex flex-col gap-3 px-3 py-4 sm:px-4">
+              {messages.length === 0 && !isLoading ? (
+                <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+                  {helperText}
+                </div>
+              ) : null}
 
-            {messages.map((message) => {
-              const isAssistant = message.role === 'assistant';
-              const hasAttachments =
-                Array.isArray(message.attachments) &&
-                message.attachments.length > 0;
-              const hasLocation = Boolean(message.location);
+              {messages.map((message) => {
+                const isAssistant = message.role === 'assistant';
+                const hasAttachments =
+                  Array.isArray(message.attachments) &&
+                  message.attachments.length > 0;
+                const hasLocation = Boolean(message.location);
 
-              return (
-                <div
-                  key={message.id}
-                  className={`flex ${isAssistant ? 'justify-start' : 'justify-end'}`}
-                >
+                return (
                   <div
-                    className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm sm:max-w-[78%] ${
-                      isAssistant
-                        ? 'bg-muted text-foreground'
-                        : 'bg-primary text-primary-foreground'
-                    }`}
+                    key={message.id}
+                    className={`flex ${isAssistant ? 'justify-start' : 'justify-end'}`}
                   >
-                    <div className="wrap-break-word whitespace-pre-wrap">
-                      <MarkdownMessage content={message.content} />
-                    </div>
-                    {hasLocation ? (
-                      <div className="mt-2 rounded-lg border border-current/10 bg-background/50 px-2 py-1 text-xs">
-                        Location shared:{' '}
-                        {message.location?.latitude?.toFixed(5)},{' '}
-                        {message.location?.longitude?.toFixed(5)}
-                      </div>
-                    ) : null}
-                    {hasAttachments ? (
-                      <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                        {message.attachments?.map((attachment, index) => (
-                          <div
-                            key={`${message.id}:attachment:${index}`}
-                            className="rounded-xl border border-current/10 bg-background/50 p-2"
-                          >
-                            {attachment.type === 'image' ||
-                            attachment.mimeType?.startsWith('image/') ? (
-                              attachment.data ? (
-                                <Image
-                                  alt={attachment.filename ?? 'Attached image'}
-                                  className="rounded-lg object-cover"
-                                  src={attachment.data}
-                                  width={320}
-                                  height={240}
-                                />
-                              ) : (
-                                <span>
-                                  {attachment.filename
-                                    ? `Image: ${attachment.filename}`
-                                    : 'Image attached'}
-                                </span>
-                              )
-                            ) : attachment.type === 'audio' ||
-                              attachment.mimeType?.startsWith('audio/') ? (
-                              attachment.data ? (
-                                <audio
-                                  controls
-                                  src={attachment.data}
-                                  className="max-w-72"
-                                />
-                              ) : (
-                                <span>
-                                  {attachment.filename
-                                    ? `Audio: ${attachment.filename}`
-                                    : 'Voice recording'}
-                                </span>
-                              )
-                            ) : (
-                              <span>
-                                {attachment.filename
-                                  ? `File: ${attachment.filename}`
-                                  : 'File attached'}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                    <p
-                      className={`mt-1 text-[11px] ${
+                    <div
+                      className={`max-w-[90%] rounded-2xl px-3 py-2 text-sm sm:max-w-[78%] ${
                         isAssistant
-                          ? 'text-muted-foreground'
-                          : 'text-primary-foreground/80'
+                          ? 'bg-muted text-foreground'
+                          : 'bg-primary text-primary-foreground'
                       }`}
                     >
-                      {new Date(message.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
-                    {isAssistant &&
-                    message.actions &&
-                    message.actions.length > 0 ? (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {message.actions.map((action) => {
-                          const variant =
-                            action.style === 'danger'
-                              ? 'destructive'
-                              : action.style === 'primary'
-                                ? 'default'
-                                : 'secondary';
-
-                          return (
-                            <Button
-                              key={`${message.id}:${action.id}:${action.value}`}
-                              type="button"
-                              size="sm"
-                              variant={variant}
-                              disabled={isLoading}
-                              onClick={() => {
-                                void handleActionClick(action, message.id);
-                              }}
-                            >
-                              {action.label}
-                            </Button>
-                          );
-                        })}
+                      <div className="wrap-break-word whitespace-pre-wrap">
+                        <MarkdownMessage content={message.content} />
                       </div>
-                    ) : null}
+                      {hasLocation ? (
+                        <div className="mt-2 rounded-lg border border-current/10 bg-background/50 px-2 py-1 text-xs">
+                          Location shared:{' '}
+                          {message.location?.latitude?.toFixed(5)},{' '}
+                          {message.location?.longitude?.toFixed(5)}
+                        </div>
+                      ) : null}
+                      {hasAttachments ? (
+                        <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                          {message.attachments?.map((attachment, index) => (
+                            <div
+                              key={`${message.id}:attachment:${index}`}
+                              className="rounded-xl border border-current/10 bg-background/50 p-2"
+                            >
+                              {attachment.type === 'image' ||
+                              attachment.mimeType?.startsWith('image/') ? (
+                                attachment.data ? (
+                                  <Image
+                                    alt={
+                                      attachment.filename ?? 'Attached image'
+                                    }
+                                    className="rounded-lg object-cover"
+                                    src={attachment.data}
+                                    width={320}
+                                    height={240}
+                                  />
+                                ) : (
+                                  <span>
+                                    {attachment.filename
+                                      ? `Image: ${attachment.filename}`
+                                      : 'Image attached'}
+                                  </span>
+                                )
+                              ) : attachment.type === 'audio' ||
+                                attachment.mimeType?.startsWith('audio/') ? (
+                                attachment.data ? (
+                                  <audio
+                                    controls
+                                    src={attachment.data}
+                                    className="max-w-72"
+                                  />
+                                ) : (
+                                  <span>
+                                    {attachment.filename
+                                      ? `Audio: ${attachment.filename}`
+                                      : 'Voice recording'}
+                                  </span>
+                                )
+                              ) : (
+                                <span>
+                                  {attachment.filename
+                                    ? `File: ${attachment.filename}`
+                                    : 'File attached'}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                      <p
+                        className={`mt-1 text-[11px] ${
+                          isAssistant
+                            ? 'text-muted-foreground'
+                            : 'text-primary-foreground/80'
+                        }`}
+                      >
+                        {new Date(message.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                      {isAssistant &&
+                      message.actions &&
+                      message.actions.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {message.actions.map((action) => {
+                            const variant =
+                              action.style === 'danger'
+                                ? 'destructive'
+                                : action.style === 'primary'
+                                  ? 'default'
+                                  : 'secondary';
+
+                            return (
+                              <Button
+                                key={`${message.id}:${action.id}:${action.value}`}
+                                type="button"
+                                size="sm"
+                                variant={variant}
+                                disabled={isLoading}
+                                onClick={() => {
+                                  void handleActionClick(action, message.id);
+                                }}
+                              >
+                                {action.label}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {isLoading ? (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl bg-muted px-3 py-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   </div>
                 </div>
-              );
-            })}
-
-            {isLoading ? (
-              <div className="flex justify-start">
-                <div className="rounded-2xl bg-muted px-3 py-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                </div>
-              </div>
-            ) : null}
-
-            <div ref={endRef} />
-          </div>
-        </ScrollArea>
+              ) : null}
+            </div>
+          </ScrollArea>
+        </div>
       </CardContent>
 
       <CardFooter className="border-t bg-background/95 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur sm:p-3">
