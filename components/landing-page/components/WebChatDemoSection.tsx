@@ -1,4 +1,5 @@
 import { unstable_noStore as noStore } from 'next/cache';
+import Link from 'next/link';
 
 import {
   type DestinationMarker,
@@ -6,6 +7,7 @@ import {
 } from '@/components/control-center/map/interactive-map';
 import { RealtimeIncidentMapDemo } from '@/components/landing-page/components/realtime-incident-map-demo';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { WebChatInterface } from '@/components/web-chat-interface';
 import { toCoordinates } from '@/lib/geo';
@@ -100,6 +102,12 @@ export async function WebChatDemoSection() {
                 </div>
               </div>
             </div>
+
+            <div className="flex justify-center">
+              <Button asChild size="sm" className="min-w-40">
+                <Link href="/chat">Open Web Chat</Link>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-3 justify-center">
@@ -127,6 +135,12 @@ export async function WebChatDemoSection() {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Button asChild size="sm" variant="outline" className="min-w-40">
+                <Link href="/control-center">Open Control Center</Link>
+              </Button>
             </div>
           </div>
         </div>
