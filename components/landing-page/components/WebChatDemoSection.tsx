@@ -1,10 +1,10 @@
 import { unstable_noStore as noStore } from 'next/cache';
 
-import { IncidentMapSceneShell } from '@/components/control-center/map/incident-map-scene-shell';
 import {
   type DestinationMarker,
   type IncidentMarker,
 } from '@/components/control-center/map/interactive-map';
+import { RealtimeIncidentMapDemo } from '@/components/landing-page/components/realtime-incident-map-demo';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { WebChatInterface } from '@/components/web-chat-interface';
@@ -121,9 +121,8 @@ export async function WebChatDemoSection() {
 
               <div className="overflow-hidden rounded-3xl border bg-background">
                 <div className="h-[min(72vh,740px)] min-h-140">
-                  <IncidentMapSceneShell
-                    embedded
-                    markers={demoMarkers}
+                  <RealtimeIncidentMapDemo
+                    initialMarkers={demoMarkers}
                     destination={demoDestination}
                   />
                 </div>
